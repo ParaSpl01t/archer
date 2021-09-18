@@ -27,7 +27,13 @@ MAINPKGSLIST=(\
 	'kitty on'\
 	'gnome-tweak-tool on'\
 	'gnome-control-center on'\
-	'xdg-user-dirs'\
+	'xdg-user-dirs on'\
+	'gnome-calculator on'\
+	'gnome-keyring on'\
+	'gnome-menus on'\
+	'networkmanager on'\
+	'file-roller on'\
+	'nano on'\
 )
 
 MAINPKGSLISTVAR=''
@@ -35,6 +41,53 @@ MAINPKGSLISTVAR=''
 for i in ${!MAINPKGSLIST[@]}; do
   MAINPKGSLISTVAR+="$(($i+1)) ${MAINPKGSLIST[$i]} "
 done
+
+
+EXTRAPKGSLIST=(\
+	'htop on'\
+	'micro on'\
+	'xclip on'\
+	'reflector on'\
+	'mpv on'\
+	'gparted on'\
+	'zip on'\
+	'exa on'\
+	'advcp on'\
+	'atool on'\
+	'zsh on'\
+	'zsh-autosuggestions on'\
+	'zsh-syntax-highlighting on'\
+	'grub on'\
+	'grub-customizer on'\
+	'dconf-editor on'\
+	'pfetch on'\
+	'noto-fonts on'\
+	'noto-fonts-cjk on'\
+	'noto-fonts-emoji on'\
+	'noto-fonts-extra on'\
+	'telegram-desktop on'\
+	'google-chrome on'\
+	'firefox on'\
+	'visual-studio-code-bin on'\
+	'filemanager-actions on'\
+	'gimp on'\
+	'gtk-engine-murrine on'\
+	'nvidia-prime on'\
+	'npm on'\
+	'nodejs on'\
+	'broadcom-wl-dkms on'\
+	'broadcom-wl off'\
+	'jq on'\
+	'fzf on'\
+	'wget on'\
+)
+
+EXTRAPKGSLISTVAR=''
+
+for i in ${!EXTRAPKGSLIST[@]}; do
+  EXTRAPKGSLISTVAR+="$(($i+1)) ${EXTRAPKGSLIST[$i]} "
+done
+
 
 #welcome dialog
 dialog --backtitle "archer.sh $VERSION" --title "ARCHER INSTALLATION" --msgbox "\nThis script will install a minimal GNOME setup with essential tools.\n\nBoot Mode : $BOOTMODE\n\nBefore Installation, make sure to partition and mount the disks and connect to Internet" 20 40
@@ -50,7 +103,7 @@ do
 	IFS=' ' read -r -a basepgksfinal <<< ${BASEPKGSLIST[$(($element-1))]}
 	BASEPKGSTOINSTALL+="${basepgksfinal[0]} "
 done
-pacstrap /mnt base $BASEPKGSTOINSTALL git
+pacstrap /mnt $BASEPKGSTOINSTALL git
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
@@ -68,7 +121,7 @@ echo "127.0.0.1\tlocalhost\n::1\t\t\tlocalhost\n127.0.1.1\t$HOSTNAME.localdomain
 
 USERNAME=$(dialog --backtitle "archer.sh $VERSION" --title "Enter Username" --inputbox "\nEnter your username to login in this machine." 10 40 --output-fd 1)
 
-$CHROOT useradd $USERNAME
+$CHROOT useradd -mG wheel $USERNAME
 
 $CHROOT git clone https://aur.archlinux.org/paru-bin.git /home/$USERNAME/paru
 echo "#!/bin/bash" > install.sh
@@ -79,11 +132,38 @@ echo 'pacman -U $(\ls paru-bin*)' >> install.sh
 cp install.sh /mnt/home/$USERNAME/paru/
 $CHROOT chmod +x /home/$USERNAME/paru/install.sh
 $CHROOT /home/$USERNAME/paru/install.sh
-# $CHROOT clear
-# $CHROOT passwd
-# $CHROOT paswd $USERNAME
 
-#GRUBDISK=$(dialog --backtitle "archer.sh $VERSION" --title "Install GRUB" --inputbox "\nEnter the disk to install grub on." 10 40 "/dev/sda" --output-fd 1)
+MAINPKGS=$(dialog --backtitle "archer.sh $VERSION" --title "Base Packages" --checklist "\nChoose base packages to install:" 20 40 6 $MAINPKGSLISTVAR --output-fd 1)
+IFS=' ' read -r -a MAINPKGSARR <<< $MAINPKGS
+MAINPKGSTOINSTALL=''
+for element in "${MAINPKGSARR[@]}"
+do
+	IFS=' ' read -r -a mainpgksfinal <<< ${MAINPKGSLIST[$(($element-1))]}
+	MAINPKGSTOINSTALL+="${mainpgksfinal[0]} "
+done
+$CHROOT paru -S --noconfirm --skipreview $MAINPKGSTOINSTALL
 
-#$CHROOT grub-install --target=i386-pc $GRUBDISK
-#$CHROOT grub-mkconfig -o /boot/grub/grub.cfg
+
+EXTRAPKGS=$(dialog --backtitle "archer.sh $VERSION" --title "Base Packages" --checklist "\nChoose base packages to install:" 20 40 6 $EXTRAPKGSLISTVAR --output-fd 1)
+IFS=' ' read -r -a EXTRAPKGSARR <<< $EXTRAPKGS
+EXTRAPKGSTOINSTALL=''
+for element in "${EXTRAPKGSARR[@]}"
+do
+	IFS=' ' read -r -a extrapgksfinal <<< ${EXTRAPKGSLIST[$(($element-1))]}
+	EXTRAPKGSTOINSTALL+="${extrapgksfinal[0]} "
+done
+$CHROOT paru -S --noconfirm --skipreview $EXTRAPKGSTOINSTALL
+
+$CHROOT passwd
+$CHROOT paswd $USERNAME
+
+GRUBDISK=$(dialog --backtitle "archer.sh $VERSION" --title "Install GRUB" --inputbox "\nEnter the disk to install grub on." 10 40 "/dev/sda" --output-fd 1)
+
+$CHROOT grub-install --target=i386-pc $GRUBDISK
+$CHROOT grub-mkconfig -o /boot/grub/grub.cfg
+
+systemctl enable bluetooth
+systemctl enable gdm
+systemctl enable NetworkManager
+
+dialog --backtitle "archer.sh $VERSION" --title "INSTALLATION FINISHED" --msgbox "\nYou can now reboot the machine." 10 40
