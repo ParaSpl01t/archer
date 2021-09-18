@@ -66,26 +66,24 @@ HOSTNAME=$(dialog --backtitle "archer.sh $VERSION" --title "Enter Hostname" --in
 echo $HOSTNAME > /mnt/etc/hostname
 echo "127.0.0.1\tlocalhost\n::1\t\t\tlocalhost\n127.0.1.1\t$HOSTNAME.localdomain\t$HOSTNAME" > /mnt/etc/hosts
 
-# $CHROOT clear
-# $CHROOT paswd
-
-
 USERNAME=$(dialog --backtitle "archer.sh $VERSION" --title "Enter Username" --inputbox "\nEnter your username to login in this machine." 10 40 --output-fd 1)
 
-useradd -mG wheel $USERNAME
+$CHROOT useradd $USERNAME
 
 $CHROOT git clone https://aur.archlinux.org/paru-bin.git /home/$USERNAME/paru
-echo "#!/bin/bash\n\
-	cd /home/$USERNAME/paru\n\
-	chown -R $USERNAME:$USERNAME /home/$USERNAME/paru\n\
-	su paradox -c 'makepkg -si'" > install.sh
+echo "#!/bin/bash" > install.sh
+echo "cd /home/$USERNAME/paru" >> install.sh
+echo "chown -R $USERNAME:$USERNAME /home/$USERNAME/paru" >> install.sh
+echo "su paradox -c 'makepkg -s'" >> install.sh
+echo 'pacman -U $(\ls paru-bin*)' >> install.sh
 cp install.sh /mnt/home/$USERNAME/paru/
-chmod +x /mnt/home/$USERNAME/paru/install.sh
+$CHROOT chmod +x /home/$USERNAME/paru/install.sh
 $CHROOT /home/$USERNAME/paru/install.sh
 # $CHROOT clear
+# $CHROOT passwd
 # $CHROOT paswd $USERNAME
 
-GRUBDISK=$(dialog --backtitle "archer.sh $VERSION" --title "Install GRUB" --inputbox "\nEnter the disk to install grub on." 10 40 "/dev/sda" --output-fd 1)
+#GRUBDISK=$(dialog --backtitle "archer.sh $VERSION" --title "Install GRUB" --inputbox "\nEnter the disk to install grub on." 10 40 "/dev/sda" --output-fd 1)
 
-$CHROOT grub-install --target=i386-pc $GRUBDISK
-$CHROOT grub-mkconfig -o /boot/grub/grub.cfg
+#$CHROOT grub-install --target=i386-pc $GRUBDISK
+#$CHROOT grub-mkconfig -o /boot/grub/grub.cfg
