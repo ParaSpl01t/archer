@@ -98,6 +98,8 @@ for i in ${!AURPKGSLIST[@]}; do
   AURPKGSLISTVAR+="$(($i+1)) ${AURPKGSLIST[$i]} "
 done
 
+pacman -S dialog
+
 #welcome dialog
 dialog --backtitle "archer.sh $VERSION" --title "ARCHER INSTALLATION" --msgbox "\nThis script will install a minimal GNOME setup with essential tools.\n\nBoot Mode : $BOOTMODE\n\nBefore Installation, make sure to partition and mount the disks and connect to Internet" 20 40
 
@@ -144,7 +146,7 @@ cp install.sh /mnt/home/$USERNAME/paru/
 $CHROOT chmod +x /home/$USERNAME/paru/install.sh
 $CHROOT /home/$USERNAME/paru/install.sh
 
-MAINPKGS=$(dialog --backtitle "archer.sh $VERSION" --title "Base Packages" --checklist "\nChoose base packages to install:" 20 40 6 $MAINPKGSLISTVAR --output-fd 1)
+MAINPKGS=$(dialog --backtitle "archer.sh $VERSION" --title "GUI Packages" --checklist "\nChoose GUI packages to install:" 20 40 6 $MAINPKGSLISTVAR --output-fd 1)
 IFS=' ' read -r -a MAINPKGSARR <<< $MAINPKGS
 MAINPKGSTOINSTALL=''
 for element in "${MAINPKGSARR[@]}"
@@ -152,10 +154,10 @@ do
 	IFS=' ' read -r -a mainpgksfinal <<< ${MAINPKGSLIST[$(($element-1))]}
 	MAINPKGSTOINSTALL+="${mainpgksfinal[0]} "
 done
-$CHROOT su $USERNAME -c "paru -S --noconfirm --skipreview $MAINPKGSTOINSTALL"
+$CHROOT pacman -S $MAINPKGSTOINSTALL
 
 
-EXTRAPKGS=$(dialog --backtitle "archer.sh $VERSION" --title "Base Packages" --checklist "\nChoose base packages to install:" 20 40 6 $EXTRAPKGSLISTVAR --output-fd 1)
+EXTRAPKGS=$(dialog --backtitle "archer.sh $VERSION" --title "Extra Packages" --checklist "\nChoose extra packages to install:" 20 40 6 $EXTRAPKGSLISTVAR --output-fd 1)
 IFS=' ' read -r -a EXTRAPKGSARR <<< $EXTRAPKGS
 EXTRAPKGSTOINSTALL=''
 for element in "${EXTRAPKGSARR[@]}"
@@ -163,12 +165,47 @@ do
 	IFS=' ' read -r -a extrapgksfinal <<< ${EXTRAPKGSLIST[$(($element-1))]}
 	EXTRAPKGSTOINSTALL+="${extrapgksfinal[0]} "
 done
-$CHROOT paru -S --noconfirm --skipreview $EXTRAPKGSTOINSTALL
+$CHROOT pacman -S $EXTRAPKGSTOINSTALL
+
+$CHROOT rm -rf /home/$USERNAME/paru/*
+
+AURPKGS=$(dialog --backtitle "archer.sh $VERSION" --title "AUR Packages" --checklist "\nChoose AUR packages to install:" 20 40 6 $AURPKGSLISTVAR --output-fd 1)
+IFS=' ' read -r -a AURPKGSARR <<< $AURPKGS
+AURPKGSTOINSTALL=''
+for element in "${AURPKGSARR[@]}"
+do
+	IFS=' ' read -r -a aurpgksfinal <<< ${AURPKGSLIST[$(($element-1))]}
+	AURPKGSTOINSTALL+="${aurpgksfinal[0]} "
+done
+
+echo "#!/bin/bash" > aur.sh
+echo "kitty paru -S --skipreview $AURPKGSTOINSTALL" >> aur.sh
+echo "rm /home/$USERNAME/aur.sh" >> aur.sh
+echo "rm /home/$USERNAME/.config/autostart/aur.desktop" >> aur.sh
+cp aur.sh /mnt/home/$USERNAME/
+$CHROOT chmod +x /home/$USERNAME/aur.sh
+
+echo "[Desktop Entry]" > aur.desktop
+echo "Type=Application" >> aur.desktop
+echo "Name=aur-installer" >> aur.desktop
+echo "Exec=/home/$USERNAME/aur.sh" >> aur.desktop
+cp aur.desktop /mnt/home/$USERNAME/.config/autostart
+$CHROOT chmod +x /home/$USERNAME/.config/autostart/aur.desktop
+
+dialog --backtitle "archer.sh $VERSION" --title "AUR Packages" --msgbox "\nAUR packages will be installed on first system reboot." 10 40
 
 $CHROOT echo "Create root password."
 $CHROOT passwd
+$CHROOT clear
 $CHROOT echo "Create password for $USERNAME."
 $CHROOT passwd $USERNAME
+
+dialog --backtitle "archer.sh $VERSION" --title "Edit /etc/sudoers" --yesno "\nPlease manually uncomment the '%wheel ALL=(ALL) ALL' line.\nDo you want to open the /etc/sudoers file?" 10 40
+response=$?
+clear
+case $response in
+   0) EDITOR=nano visudo;;
+esac
 
 GRUBDISK=$(dialog --backtitle "archer.sh $VERSION" --title "Install GRUB" --inputbox "\nEnter the disk to install grub on." 10 40 "/dev/sda" --output-fd 1)
 
