@@ -24,3 +24,6 @@ chmod +x archer
 - Add option to select other locales apart from en_US.utf-8
 - Add UEFI/MBR support
 - Support more minimal DEs?
+- More packages
+- Better package catagories and minimal default selection
+- Option to add more than one user.
