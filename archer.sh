@@ -143,7 +143,7 @@ do
 	IFS=' ' read -r -a mainpgksfinal <<< ${MAINPKGSLIST[$(($element-1))]}
 	MAINPKGSTOINSTALL+="${mainpgksfinal[0]} "
 done
-$CHROOT paru -S --noconfirm --skipreview $MAINPKGSTOINSTALL
+$CHROOT su $USERNAME -c "paru -S --noconfirm --skipreview $MAINPKGSTOINSTALL"
 
 
 EXTRAPKGS=$(dialog --backtitle "archer.sh $VERSION" --title "Base Packages" --checklist "\nChoose base packages to install:" 20 40 6 $EXTRAPKGSLISTVAR --output-fd 1)
@@ -156,8 +156,10 @@ do
 done
 $CHROOT paru -S --noconfirm --skipreview $EXTRAPKGSTOINSTALL
 
+$CHROOT echo "Create root password."
 $CHROOT passwd
-$CHROOT paswd $USERNAME
+$CHROOT echo "Create password for $USERNAME."
+$CHROOT passwd $USERNAME
 
 GRUBDISK=$(dialog --backtitle "archer.sh $VERSION" --title "Install GRUB" --inputbox "\nEnter the disk to install grub on." 10 40 "/dev/sda" --output-fd 1)
 
