@@ -92,7 +92,7 @@ done
 #welcome dialog
 dialog --backtitle "archer.sh $VERSION" --title "ARCHER INSTALLATION" --msgbox "\nThis script will install a minimal GNOME setup with essential tools.\n\nBoot Mode : $BOOTMODE\n\nBefore Installation, make sure to partition and mount the disks and connect to Internet" 20 40
 
-
+sed -i '/Parallel/s/^#//g' /etc/pacman.conf
 timedatectl set-ntp true
 
 BASEPKGS=$(dialog --backtitle "archer.sh $VERSION" --title "Base Packages" --checklist "\nChoose base packages to install:" 20 40 6 $BASEPKGSLISTVAR --output-fd 1)
@@ -106,6 +106,8 @@ done
 pacstrap /mnt $BASEPKGSTOINSTALL git
 
 genfstab -U /mnt >> /mnt/etc/fstab
+
+sed -i '/Parallel/s/^#//g' /mnt/etc/pacman.conf
 
 TIMEZONE=$(dialog --backtitle "archer.sh $VERSION" --title "Enter Timezone" --inputbox "\nEnter Timezone in Region/City format." 10 40 "Asia/Kolkata" --output-fd 1)
 $CHROOT timedatectl set-timezone $TIMEZONE
