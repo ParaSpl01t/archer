@@ -10,6 +10,7 @@ CHROOT='arch-chroot /mnt'
 BASEPKGSLIST=(\
 	'base on'\
 	'base-devel on'\
+	'git on'\
 	'linux-zen on'\
 	'linux-zen-headers on'\
 	'linux-firmware on'\
@@ -37,6 +38,7 @@ MAINPKGSLIST=(\
 	'gnome-menus on'\
 	'networkmanager on'\
 	'file-roller on'\
+	'eog on'\
 	'nano on'\
 )
 
@@ -94,6 +96,9 @@ AURPKGSLIST=(\
 	'google-chrome on'\
 	'pfetch on'\
 	'advcp on'\
+	'xcursor-breeze on'\
+	'pamac-aur on'\
+	'archlinux-appstream-data-pamac on'\
 )
 
 AURPKGSLISTVAR=''
@@ -127,7 +132,7 @@ done
 clear
 
 # Start base package installation
-pacstrap /mnt $BASEPKGSTOINSTALL git
+pacstrap /mnt $BASEPKGSTOINSTALL
 
 #genfstab
 genfstab -U /mnt >> /mnt/etc/fstab
