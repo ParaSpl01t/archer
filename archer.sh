@@ -52,7 +52,6 @@ EXTRAPKGSLIST=(\
 	'gparted on'\
 	'zip on'\
 	'exa on'\
-	'advcp on'\
 	'atool on'\
 	'zsh on'\
 	'zsh-autosuggestions on'\
@@ -60,15 +59,12 @@ EXTRAPKGSLIST=(\
 	'grub on'\
 	'grub-customizer on'\
 	'dconf-editor on'\
-	'pfetch on'\
 	'noto-fonts on'\
 	'noto-fonts-cjk on'\
 	'noto-fonts-emoji on'\
 	'noto-fonts-extra on'\
 	'telegram-desktop on'\
-	'google-chrome on'\
 	'firefox on'\
-	'visual-studio-code-bin on'\
 	'filemanager-actions on'\
 	'gimp on'\
 	'gtk-engine-murrine on'\
@@ -88,6 +84,19 @@ for i in ${!EXTRAPKGSLIST[@]}; do
   EXTRAPKGSLISTVAR+="$(($i+1)) ${EXTRAPKGSLIST[$i]} "
 done
 
+
+AURPKGSLIST=(\
+	'visual-studio-code-bin on'\
+	'google-chrome on'\
+	'pfetch on'\
+	'advcp on'\
+)
+
+AURPKGSLISTVAR=''
+
+for i in ${!AURPKGSLIST[@]}; do
+  AURPKGSLISTVAR+="$(($i+1)) ${AURPKGSLIST[$i]} "
+done
 
 #welcome dialog
 dialog --backtitle "archer.sh $VERSION" --title "ARCHER INSTALLATION" --msgbox "\nThis script will install a minimal GNOME setup with essential tools.\n\nBoot Mode : $BOOTMODE\n\nBefore Installation, make sure to partition and mount the disks and connect to Internet" 20 40
