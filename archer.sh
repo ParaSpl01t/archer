@@ -5,6 +5,8 @@ VERSION=0.0.1
 BOOTMODE='bios'
 [[ -d /sys/firmware/efi ]] && BOOTMODE='uefi'
 CHROOT='arch-chroot /mnt'
+
+# Base packages list
 BASEPKGSLIST=(\
 	'base on'\
 	'base-devel on'\
@@ -21,7 +23,7 @@ for i in ${!BASEPKGSLIST[@]}; do
   BASEPKGSLISTVAR+="$(($i+1)) ${BASEPKGSLIST[$i]} "
 done
 
-
+# GUI packages list
 MAINPKGSLIST=(\
 	'gnome-shell on'\
 	'gdm on'\
@@ -44,7 +46,7 @@ for i in ${!MAINPKGSLIST[@]}; do
   MAINPKGSLISTVAR+="$(($i+1)) ${MAINPKGSLIST[$i]} "
 done
 
-
+# extra packages list
 EXTRAPKGSLIST=(\
 	'htop on'\
 	'micro on'\
@@ -86,7 +88,7 @@ for i in ${!EXTRAPKGSLIST[@]}; do
   EXTRAPKGSLISTVAR+="$(($i+1)) ${EXTRAPKGSLIST[$i]} "
 done
 
-
+# AUR packages list
 AURPKGSLIST=(\
 	'visual-studio-code-bin on'\
 	'google-chrome on'\
@@ -105,7 +107,6 @@ pacman -S dialog
 
 # Welcome dialog
 dialog --backtitle "archer.sh $VERSION" --title "ARCHER INSTALLATION" --msgbox "\nThis script will install a minimal GNOME setup with essential tools.\n\nBoot Mode : $BOOTMODE\n\nBefore Installation, make sure to partition and mount the disks and connect to Internet" 20 40
-
 clear
 
 # Enable parallel downloads
