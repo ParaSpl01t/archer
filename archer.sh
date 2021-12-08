@@ -228,7 +228,7 @@ clear
 
 # Create a script(run manually) to install selected AUR packages
 echo "#!/bin/bash" > aur.sh
-echo "kitty paru -S --skipreview $AURPKGSTOINSTALL" >> aur.sh
+echo "paru -S --skipreview $AURPKGSTOINSTALL" >> aur.sh
 echo "rm /home/$USERNAME/aur.sh" >> aur.sh
 cp aur.sh /mnt/home/$USERNAME/
 $CHROOT chmod +x /home/$USERNAME/aur.sh
@@ -254,10 +254,10 @@ response=$?
 clear
 case $response in
    0)
-      echo "EDITOR=nano visudo" > /mnt/visudotmp
-	  $CHROOT bash visudotmp
-	  rm /mnt/visudotmp
-   ;;
+		echo "EDITOR=nano visudo" > /mnt/visudotmp
+		$CHROOT bash visudotmp
+		rm /mnt/visudotmp
+	;;
 esac
 
 # GRUB disk location
