@@ -108,7 +108,7 @@ for i in ${!AURPKGSLIST[@]}; do
 done
 
 # Install Dependencies
-pacman -S dialog
+pacman -Sy dialog --no-confirm
 
 # Welcome dialog
 dialog --backtitle "archer.sh $VERSION" --title "ARCHER INSTALLATION" --msgbox "\nThis script will install a minimal GNOME setup with essential tools.\n\nBoot Mode : $BOOTMODE\n\nBefore Installation, make sure to partition and mount the disks and connect to Internet" 20 40
@@ -174,6 +174,9 @@ $CHROOT useradd -mG wheel $USERNAME
 # Fetch paru-bin
 $CHROOT git clone https://aur.archlinux.org/paru-bin.git /home/$USERNAME/paru
 
+echo "Waiting..."
+read
+
 # Paru installation script
 echo "#!/bin/bash" > install.sh
 echo "cd /home/$USERNAME/paru" >> install.sh
@@ -183,6 +186,10 @@ echo 'pacman -U $(\ls paru-bin*)' >> install.sh
 cp install.sh /mnt/home/$USERNAME/paru/
 $CHROOT chmod +x /home/$USERNAME/paru/install.sh
 $CHROOT /home/$USERNAME/paru/install.sh
+
+
+echo "Waiting..."
+read
 
 # Install GUI package dialog
 MAINPKGS=$(dialog --backtitle "archer.sh $VERSION" --title "GUI Packages" --checklist "\nChoose GUI packages to install:" 20 40 6 $MAINPKGSLISTVAR --output-fd 1)
