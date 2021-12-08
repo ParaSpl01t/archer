@@ -108,7 +108,7 @@ for i in ${!AURPKGSLIST[@]}; do
 done
 
 # Install Dependencies
-pacman -Sy dialog --no-confirm
+pacman -Sy dialog --noconfirm
 
 # Welcome dialog
 dialog --backtitle "archer.sh $VERSION" --title "ARCHER INSTALLATION" --msgbox "\nThis script will install a minimal GNOME setup with essential tools.\n\nBoot Mode : $BOOTMODE\n\nBefore Installation, make sure to partition and mount the disks and connect to Internet" 20 40
@@ -181,7 +181,7 @@ read
 echo "#!/bin/bash" > install.sh
 echo "cd /home/$USERNAME/paru" >> install.sh
 echo "chown -R $USERNAME:$USERNAME /home/$USERNAME/paru" >> install.sh
-echo "su paradox -c 'makepkg -s'" >> install.sh
+echo "su $USERNAME -c 'makepkg -s'" >> install.sh
 echo 'pacman -U $(\ls paru-bin*)' >> install.sh
 cp install.sh /mnt/home/$USERNAME/paru/
 $CHROOT chmod +x /home/$USERNAME/paru/install.sh
@@ -259,7 +259,11 @@ dialog --backtitle "archer.sh $VERSION" --title "Edit /etc/sudoers" --yesno "\nP
 response=$?
 clear
 case $response in
-   0) $CHROOT EDITOR=nano visudo;;
+   0)
+      echo "EDITOR=nano visudo" > /mnt/visudotmp
+	  $CHROOT /mnt bash visudotmp
+	  rm /mnt/visudotmp
+   ;;
 esac
 
 # GRUB disk location
