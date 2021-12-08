@@ -239,6 +239,7 @@ echo "kitty paru -S --skipreview $AURPKGSTOINSTALL" >> aur.sh
 echo "rm /home/$USERNAME/aur.sh" >> aur.sh
 cp aur.sh /mnt/home/$USERNAME/
 $CHROOT chmod +x /home/$USERNAME/aur.sh
+$CHROOT chown $USERNAME:$USERNAME /home/$USERNAME/aur.sh
 
 # AUR packages manual dialog
 dialog --backtitle "archer.sh $VERSION" --title "AUR Packages" --msgbox "\nPlease manually run ~/aur.sh to install AUR packages on system reboot." 10 40
