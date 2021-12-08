@@ -28,7 +28,7 @@ bash archer
 -   Add installation resume support.
 -   Add better handling of script execution. (current is linear and non-repeatable)
 -   Add option to select other locales apart from en_US.utf-8
--   Add UEFI/MBR support
+-   Add UEFI/GPT support
 -   Support more minimal DEs?
 -   More packages
 -   Better package catagories and minimal default selection
