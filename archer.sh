@@ -255,7 +255,7 @@ clear
 case $response in
    0)
       echo "EDITOR=nano visudo" > /mnt/visudotmp
-	  $CHROOT /mnt bash visudotmp
+	  $CHROOT bash visudotmp
 	  rm /mnt/visudotmp
    ;;
 esac
