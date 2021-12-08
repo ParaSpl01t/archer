@@ -174,7 +174,7 @@ $CHROOT useradd -mG wheel $USERNAME
 # Fetch paru-bin
 $CHROOT git clone https://aur.archlinux.org/paru-bin.git /home/$USERNAME/paru
 
-echo "Waiting..."
+echo "Waiting for keypress..."
 read
 
 # Paru installation script
