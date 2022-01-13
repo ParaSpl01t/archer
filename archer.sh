@@ -162,7 +162,7 @@ clear
 
 # Set hostname
 echo $HOSTNAME > /mnt/etc/hostname
-echo "127.0.0.1\tlocalhost\n::1\t\t\tlocalhost\n127.0.1.1\t$HOSTNAME.localdomain\t$HOSTNAME" > /mnt/etc/hosts
+echo -e "127.0.0.1\tlocalhost\n::1\t\t\tlocalhost\n127.0.1.1\t$HOSTNAME.localdomain\t$HOSTNAME" > /mnt/etc/hosts
 
 # Username dialog
 USERNAME=$(dialog --backtitle "archer.sh $VERSION" --title "Enter Username" --inputbox "\nEnter your username to login in this machine." 10 40 --output-fd 1)
